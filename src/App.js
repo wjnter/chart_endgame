@@ -62,10 +62,6 @@ class App extends Component {
 		}
 
 		ws.onmessage = evt => {
-			// listen to data sent from the websocket server
-			// console.log(":::::::event")
-			// console.log(evt);
-
 			const message = JSON.parse(evt.data)
 			this.setState({dataFromServer: message})
 			console.log(message)
