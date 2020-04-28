@@ -3,10 +3,21 @@ import Chart from "react-apexcharts";
 
 
 
-const FlameChart = ({flameData, flameCategory}) => {
+const GasChart = ({gasData, gasCategory}) => {
   const initOptions = {
     chart: {
-      id: "flame-chart",
+      id: "gas-chart",
+      animations: {
+        enabled: true,
+        easing: 'linear',
+        speed: 1000,
+        dynamicAnimation: {
+          enabled: false
+        }
+    }
+    },
+    stroke: {
+      curve: 'smooth'
     },
     xaxis: {
       categories: [""],
@@ -14,16 +25,16 @@ const FlameChart = ({flameData, flameCategory}) => {
   }
   const initSeries = [
     {
-      name: "Flame Chart",
+      name: "Gas Chart",
       data: [0],
-    }
+    },
   ]
   const didUpdateRef = useRef(false)
   const [options, setOptions] = useState(initOptions);
   const [series, setSeries] = useState(initSeries);
 
   const handleUpdateData = () => {
-    const newCategory = flameCategory;
+    const newCategory = gasCategory;
     const newOptions = { ...options }
     const currentCategories = newOptions.xaxis.categories;
     currentCategories.push(newCategory);
@@ -31,7 +42,7 @@ const FlameChart = ({flameData, flameCategory}) => {
 
     const newSeries = [];
     const currentSeries = series[0];
-    const newData = flameData;
+    const newData = gasData;
     const data = [...currentSeries.data];
     data.push(newData);
     data.length > 10 && data.shift();
@@ -47,7 +58,7 @@ const FlameChart = ({flameData, flameCategory}) => {
     if (didUpdateRef.current) {
       handleUpdateData();
     } else didUpdateRef.current = true;
-  }, [flameCategory]);
+  }, [gasCategory]);
 
   return (
     <Chart
@@ -60,4 +71,4 @@ const FlameChart = ({flameData, flameCategory}) => {
   )
 }
 
-export default FlameChart;
+export default GasChart;

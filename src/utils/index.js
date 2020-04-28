@@ -1,0 +1,1 @@
+export const CONSTANT_TYPE = ['flame', 'gas', 'temperature', 'humidity'];
