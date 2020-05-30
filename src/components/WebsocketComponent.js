@@ -5,13 +5,13 @@ class WebsocketComponent extends Component {
 		const { websocket } = this.props; // websocket instance passed as props to the child component.
 
 		try {
-			websocket.send("Dong dong "); //send data to the server
+			websocket.send("getAvgData"); //send data to the server
 		} catch (error) {
 			console.log(error); // catch error
 		}
 	};
 	render() {
-		return <button onClick={this.sendMessage}>Send Data</button>;
+		return <button onClick={this.sendMessage}>Daily</button>;
 	}
 }
 
