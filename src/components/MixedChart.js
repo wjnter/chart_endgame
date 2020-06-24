@@ -23,22 +23,14 @@ const MixedChart = ({ dataset, category }) => {
 		},
 	};
 	const initSeries = [
-		// {
-		// 	name: "Flame",
-		// 	data: [0],
-		// },
 		{
 			name: "Gas",
-			data: [0],
+			data: [],
 		},
 		{
 			name: "Temperature",
-			data: [0],
+			data: [],
 		},
-		// {
-		// 	name: "Humidity",
-		// 	data: [0],
-		// },
 	];
 	const didUpdateRef = useRef(false);
 	const [options, setOptions] = useState(initOptions);

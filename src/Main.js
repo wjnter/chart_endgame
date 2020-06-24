@@ -2,11 +2,17 @@ import React, { Component } from "react";
 import "./App.css";
 import MixedChart from "./components/MixedChart";
 import AverageChart from "./components/AverageChart";
+import Notification from "./components/Notification";
+import { AudioPlayerProvider } from "react-use-audio-player";
+import AudioP from "./components/Audio";
 import WebsocketComponent from "./components/WebsocketComponent";
 import { withRouter } from "react-router-dom";
+import WARNING from "./warning.mp3";
 
-import { CONSTANT_TYPE, CONSTANT_TYPE_AVG, clearToken } from "./utils";
+import { CONSTANT_TYPE, CONSTANT_TYPE_AVG, clearToken, logs } from "./utils";
 
+// const url = "ws://45.119.83.71:3300/";
+const url = "ws://localhost:3300/";
 class Main extends Component {
 	constructor(props) {
 		super(props);
@@ -14,29 +20,34 @@ class Main extends Component {
 		this.state = {
 			ws: null,
 			category: "",
-			data: {
-				flame: 0,
-				gas: 0,
-				temperature: 0,
-				humidity: 0,
-			},
+			data: [
+				{ id: "Node1", gas: "", temperature: "", battery: "" },
+				{ id: "Node2", gas: "", temperature: "", battery: "" },
+			],
 			avgDailyData: {
 				category: [],
-				data: {
-					avgTemperature: [0],
-					avgGas: [0],
-				},
+				data: [
+					{ id: "Node1", avgTemperature: [""], avgGas: [""] },
+					{ id: "Node2", avgTemperature: [""], avgGas: [""] },
+				],
 			},
+			trigger: false,
 		};
 	}
 	componentDidMount() {
 		this.connect();
+		this.handleTrigger();
+	}
+	componentDidUpdate(prevProps, prevState) {
+		if (prevState.trigger !== this.state.trigger) {
+			this.handleTrigger();
+		}
 	}
 
 	timeout = 250; // Initial timeout duration as a class variable
 
 	connect = () => {
-		var ws = new WebSocket("ws://localhost:3300");
+		var ws = new WebSocket(url);
 		let that = this; // cache the this
 		var connectInterval;
 
@@ -44,7 +55,7 @@ class Main extends Component {
 		ws.onopen = () => {
 			console.log("connected websocket main component");
 
-			this.setState({ ws: ws });
+			this.setState({ ws });
 
 			that.timeout = 250; // reset timer to 250 on open of websocket connection
 			clearTimeout(connectInterval); // clear Interval on on open of websocket connection
@@ -65,7 +76,7 @@ class Main extends Component {
 		};
 
 		ws.onmessage = (evt) => {
-			this.handleUpdateData(evt.data);
+			this.handleSetState(evt.data);
 		};
 
 		// websocket onerror event listener
@@ -79,78 +90,79 @@ class Main extends Component {
 			ws.close();
 		};
 	};
+
 	check = () => {
 		const { ws } = this.state;
 		if (!ws || ws.readyState === WebSocket.CLOSED) this.connect(); //check if websocket instance is closed, if so call `connect` function.
 	};
-	randomData = () => {
-		const randomValue = Math.floor(Math.random() * 5 + 40);
-		const date = new Date().toString().split(" ");
-		const currentDate = date.slice(1, 4).join(" ");
-		const currentTime = date[4];
-		return `[
-			{"type": "flame", "value": "${randomValue}", "date": "${currentDate}", "time": "${currentTime}"},
-			{"type": "gas", "value": "1", "date": "${currentDate}", "time": "${currentTime}"},
-			{"type": "humidity", "value": "1", "date": "${currentDate}", "time": "${currentTime}"},
-			{"type": "temperature", "value": "1", "date": "${currentDate}", "time": "${currentTime}"}
-		]`;
+
+	handleUpdateData = ({ type, valueNode1, valueNode2, category, newData }) => {
+		const clonedData = [
+			{ ...newData[0], [type]: valueNode1 },
+			{ ...newData[1], [type]: valueNode2 },
+		];
+		newData = [...clonedData];
+		return [newData, category];
 	};
 
-	handleSetState = ({ type, data, category }) => {
-		this.setState({
-			category,
-			data: {
-				...this.state.data,
-				[type]: data,
+	handleSetState = (message) => {
+		const dataMessage = JSON.parse(message);
+		let newAvgData = [
+			{
+				id: "Node1",
+				avgTemperature: [],
+				avgGas: [],
 			},
-		});
-	};
-
-	handleSetStateForAvgDailyData = ({ type, data, category }) => {
-		const newCategory = [...this.state.avgDailyData.category];
-		const newData = [...this.state.avgDailyData.data[type]];
-		newCategory.length <= newData.length && newCategory.push(category);
-		newData.push(data);
-		this.setState({
-			avgDailyData: {
-				category: newCategory,
-				data: {
-					...this.state.avgDailyData.data,
-					[type]: newData,
-				},
+			{
+				id: "Node2",
+				avgTemperature: [],
+				avgGas: [],
 			},
-		});
-	};
-
-	handleUpdateData = (message) => {
-		const data = JSON.parse(message);
-		let newData = {
-			avgTemperature: [],
-			avgGas: [],
-		};
+		];
+		let newData = [...this.state.data];
+		let category = "";
 		let newCategory = [];
-		if (data[0] !== null) {
-			if (data[0] !== "getAvgData") {
-				data.map(({ type, time, value }) => {
-					CONSTANT_TYPE.map(
-						(item) =>
-							item === type &&
-							this.handleSetState({ type, data: value, category: time })
-					);
+		if (dataMessage[0] !== null) {
+			if (dataMessage[0] !== "getAvgData") {
+				dataMessage.map(({ type, time, valueNode1, valueNode2 }) => {
+					CONSTANT_TYPE.map((item) => {
+						if (item === type) {
+							[newData, category] = this.handleUpdateData({
+								type,
+								valueNode1,
+								valueNode2,
+								category: time,
+								newData,
+							});
+						}
+						return true;
+					});
 					return true;
 				});
+				this.setState({
+					category,
+					data: newData,
+				});
 			} else {
-				data[1].map(({ type, value, date }) => {
-					newCategory.length < data[1].length / 2 && newCategory.push(date);
-					CONSTANT_TYPE_AVG.map(
-						(item) => item === type.toLowerCase() && newData[type].push(value)
-					);
+				dataMessage[1].map((dataItem) => {
+					newCategory.length < dataMessage[1].length / 2 &&
+						newCategory.push(dataItem.date);
+					newAvgData.map((newDataItem) => {
+						CONSTANT_TYPE_AVG.map((typeItem) => {
+							if (typeItem === dataItem.type.toLowerCase()) {
+								const keyOfValue = `value${newDataItem.id}`; // -> valueNode1 or valueNode2
+								newDataItem[dataItem.type].push(dataItem[keyOfValue]);
+							}
+							return true;
+						});
+						return true;
+					});
 					return true;
 				});
 				this.setState({
 					avgDailyData: {
 						category: newCategory,
-						data: newData,
+						data: newAvgData,
 					},
 				});
 			}
@@ -164,20 +176,40 @@ class Main extends Component {
 		this.props.history.push("/");
 	};
 
+	handleTrigger = () => {
+		const { temperature, gas } = this.state.data;
+		const isOverTemperature = temperature >= 60;
+		const isOverGas = gas >= 30;
+		(isOverGas || isOverTemperature) && this.setState({ trigger: true });
+	};
+
+	setPlay = () => this.setState({ trigger: false });
+
 	render() {
-		const { ws, category, data, avgDailyData } = this.state;
+		const { ws, category, data, avgDailyData, trigger } = this.state;
+		console.log("data", data);
+		console.log("avgDailyData", avgDailyData);
 		return (
 			<>
-				<MixedChart category={category} dataset={data} />
-				<AverageChart
-					category={avgDailyData.category}
-					dataset={avgDailyData.data}
-				/>
+				<div>Hello</div>
+				{/* <Notification trigger={trigger} /> */}
+				<div style={{ display: "flex" }}>
+					<MixedChart category={category} dataset={data[0]} />
+					<MixedChart category={category} dataset={data[1]} />
+					<AverageChart
+						category={avgDailyData.category}
+						dataset={avgDailyData.data[0]}
+					/>
+				</div>
 
 				<button onClick={this.updateData}>Update</button>
 				<button onClick={this.handleUpdateData}>Update Flame</button>
 				<WebsocketComponent websocket={ws} />
 				<button onClick={this.logout}>Logout</button>
+				{/* <button onClick={this.setPlay}>{trigger ? "Play" : "Pause"}</button>
+				<AudioPlayerProvider>
+					<AudioP file={WARNING} trigger={trigger} />
+				</AudioPlayerProvider> */}
 			</>
 		);
 	}
