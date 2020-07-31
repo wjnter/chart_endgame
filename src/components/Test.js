@@ -2,10 +2,13 @@ import React from "react";
 import clsx from "clsx";
 import "../assets/css/styles.css";
 import { makeStyles } from "@material-ui/core/styles";
+
 import Drawer from "@material-ui/core/Drawer";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
+
+import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 
 import AverageChart from "./AverageChart";
 
@@ -91,7 +94,24 @@ export default function TemporaryDrawer({ avgDailyData, ws }) {
 
 	return (
 		<React.Fragment>
-			<Button onClick={toggleDrawer(bottom, true)}>{bottom}</Button>
+			<Grid
+				className="expand-button"
+				onClick={toggleDrawer(bottom, true)}
+				item
+				xs={10}
+				sm={6}
+				md={5}
+			>
+				<KeyboardArrowUpIcon style={{ fontSize: 60 }} />
+				<span style={{ margin: "-15px 0 10px 0", fontWeight: "600" }}>
+					Xem Giá Trị Trung Bình
+				</span>
+			</Grid>
+			<div></div>
+			{/* <Button variant="contained" onClick={toggleDrawer(bottom, true)}>
+				
+				{bottom}
+			</Button> */}
 			<Drawer
 				anchor={bottom}
 				open={state[bottom]}

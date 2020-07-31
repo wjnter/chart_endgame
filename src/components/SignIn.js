@@ -18,10 +18,15 @@ import ToastMessage from "./ToastMessage";
 
 function Copyright() {
 	return (
-		<Typography variant="body2" color="textSecondary" align="center">
+		<Typography
+			variant="body2"
+			color="textSecondary"
+			align="center"
+			style={{ marginBottom: 27 }}
+		>
 			{"Copyright © "}
 			<Link color="inherit" href="https://material-ui.com/">
-				Your Website
+				End Game HCMUTE
 			</Link>{" "}
 			{new Date().getFullYear()}
 			{"."}
@@ -35,18 +40,13 @@ const useStyles = makeStyles((theme) => ({
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "center",
-		width: 520,
-		height: 480,
-		borderRadius: 20,
-		background: "#e8e8e8",
-		boxShadow: "0px 0px 5px 0px rgba(0, 0, 0, 0.75)",
 	},
 	avatar: {
 		margin: theme.spacing(1),
 		backgroundColor: theme.palette.secondary.main,
 	},
 	form: {
-		width: "70%", // Fix IE 11 issue.
+		width: "100%", // Fix IE 11 issue.
 		marginTop: theme.spacing(1),
 	},
 	submit: {
@@ -83,7 +83,7 @@ function SignIn(props) {
 	};
 	const redirectUser = (path) => props.history.push(path);
 	return (
-		<Container component="main" maxWidth="xs">
+		<Container component="main" maxWidth="xs" className="signin-container">
 			<CssBaseline />
 			<div className={classes.paper}>
 				<Avatar className={classes.avatar}>
@@ -116,10 +116,6 @@ function SignIn(props) {
 						id="password"
 						autoComplete="current-password"
 						onChange={handleChange}
-					/>
-					<FormControlLabel
-						control={<Checkbox value="remember" color="primary" />}
-						label="Remember me"
 					/>
 					<Button
 						type="submit"

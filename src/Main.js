@@ -228,7 +228,7 @@ class Main extends Component {
 					className={classes.mainContainer}
 					container
 					alignItems="center"
-					justify="center"
+					justify="space-evenly"
 				>
 					<Grid item md={10}>
 						<div className={classes.root}>
@@ -303,13 +303,6 @@ class Main extends Component {
 									title="Biểu đồ hiển thị Trạm"
 								/>
 								<Test avgDailyData={avgDailyData} ws={ws} />
-								<Collapse in={expand} timeout="auto" unmountOnExit>
-									<AverageChartGroup
-										data={avgDailyData.data}
-										category={avgDailyData.category}
-										title="Biểu đồ giá trị trung bình Trạm"
-									/>
-								</Collapse>
 							</Grid>
 						</div>
 					</Grid>
@@ -342,20 +335,6 @@ const ChartGroup = ({ data, title, category }) => {
 					<h4 style={{ textAlign: "center" }}>{`${title} ${idx + 1}`}</h4>
 					<Paper elevation={4} style={styles}>
 						<MixedChart category={category} dataset={el} />
-					</Paper>
-				</Grid>
-			))}
-		</Grid>
-	);
-};
-const AverageChartGroup = ({ data, title, category }) => {
-	return (
-		<Grid container justify="space-evenly" alignItems="center">
-			{data.map((el, idx) => (
-				<Grid key={idx} item xs={10} sm={6} md={5}>
-					<h4 style={{ textAlign: "center" }}>{`${title} ${idx + 1}`}</h4>
-					<Paper style={styles}>
-						<AverageChart category={category} dataset={el} />
 					</Paper>
 				</Grid>
 			))}
