@@ -71,15 +71,7 @@ const MixedChart = ({ dataset, category }) => {
 		} else didUpdateRef.current = true;
 	}, [category]);
 
-	return (
-		<Chart
-			options={options}
-			series={series}
-			type="line"
-			width={500}
-			height={320}
-		/>
-	);
+	return <Chart options={options} series={series} type="line" />;
 };
 
 export default MixedChart;

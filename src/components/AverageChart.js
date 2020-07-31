@@ -19,17 +19,17 @@ const AverageChart = ({ dataset, category }) => {
 			curve: "smooth",
 		},
 		xaxis: {
-			categories: [""]
-    },
-  };
+			categories: [""],
+		},
+	};
 	const initSeries = [
 		{
 			name: "avgGas",
-      data: [0]
+			data: [],
 		},
 		{
-      name: "avgTemperature",
-      data: [0]
+			name: "avgTemperature",
+			data: [],
 		},
 	];
 	const didUpdateRef = useRef(false);
@@ -37,12 +37,13 @@ const AverageChart = ({ dataset, category }) => {
 	const [series, setSeries] = useState(initSeries);
 
 	const handleUpdateData = () => {
-		const newOptions = { ...options };
-    let newSeries = [];
-		newOptions.xaxis.categories = [...category];
+		let newOptions = { ...options };
+		let newSeries = [];
+		newOptions.xaxis.categories.length = 0;
+		newOptions.xaxis.categories.push(...category);
 		series.map(({ name: itemName, data }) => {
 			const name = itemName.toLowerCase();
-			CONSTANT_TYPE_AVG.map(type => {
+			CONSTANT_TYPE_AVG.map((type) => {
 				if (type === name) {
 					const newData = [...dataset[itemName]];
 					newSeries.push({ data: newData, name: itemName });
@@ -51,7 +52,6 @@ const AverageChart = ({ dataset, category }) => {
 			});
 			return true;
 		});
-
 		setOptions(newOptions);
 		setSeries(newSeries);
 	};
@@ -61,16 +61,7 @@ const AverageChart = ({ dataset, category }) => {
 			handleUpdateData();
 		} else didUpdateRef.current = true;
 	}, [category]);
-
-	return (
-		<Chart
-			options={options}
-			series={series}
-			type="line"
-			width={500}
-			height={320}
-		/>
-	);
+	return <Chart options={options} series={series} type="line" />;
 };
 
 export default AverageChart;
