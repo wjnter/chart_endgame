@@ -16,9 +16,9 @@ const Card = ({
 	warning = false,
 }) => {
 	const UNITS = {
-		"Nhiệt độ": "°C",
-		"Nồng độ CO": "%",
-		Pin: "%",
+		"Nhiệt độ": " °C",
+		"Nồng độ CO": " %",
+		Pin: " %",
 		"Trộm gỗ": "",
 	};
 	const ICONS = {
@@ -47,6 +47,7 @@ const Card = ({
 								? "Trạng thái tốt"
 								: "Trạng thái xấu"
 							: content || "0"}
+						{UNITS[title]}
 					</p>
 				</div>
 			</div>

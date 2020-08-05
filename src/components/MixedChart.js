@@ -38,31 +38,41 @@ const MixedChart = ({ dataset, category }) => {
 
 	const updateData = ({ data, name, accumulator, dataset }) => {
 		const lowerCaseName = name.toLowerCase();
+		// if (dataset[lowerCaseName] !== "") {
+		// 	data.push(dataset[lowerCaseName]);
+		// 	data.length > 10 && data.shift();
+		// 	accumulator.push({ data, name });
+		// }
 		data.push(dataset[lowerCaseName]);
 		data.length > 10 && data.shift();
 		accumulator.push({ data, name });
 	};
 
 	const handleUpdateData = () => {
-		const newOptions = { ...options };
-		const currentCategories = newOptions.xaxis.categories;
-		currentCategories.push(category);
-		currentCategories.length > 10 && currentCategories.shift();
+		if (dataset["gas"] !== "") {
+			const newOptions = { ...options };
+			const currentCategories = newOptions.xaxis.categories;
 
-		let newSeries = [];
-		series.map(({ data: itemData, name: itemName }) => {
-			const data = [...itemData];
-			const name = itemName.toLowerCase();
-			CONSTANT_TYPE.map((type) => {
-				type === name &&
-					updateData({ data, name: itemName, accumulator: newSeries, dataset });
-				return true;
+			let newSeries = [];
+			currentCategories.push(category);
+			currentCategories.length > 10 && currentCategories.shift();
+			series.map(({ data: itemData, name: itemName }) => {
+				const data = [...itemData];
+				const name = itemName.toLowerCase();
+				CONSTANT_TYPE.map((type) => {
+					type === name &&
+						updateData({
+							data,
+							name: itemName,
+							accumulator: newSeries,
+							dataset,
+						});
+				});
 			});
-			return true;
-		});
 
-		setOptions(newOptions);
-		setSeries(newSeries);
+			setOptions(newOptions);
+			setSeries(newSeries);
+		}
 	};
 
 	useEffect(() => {

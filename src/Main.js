@@ -1,17 +1,13 @@
 import React, { Component } from "react";
 import "./assets/css/styles.css";
 import MixedChart from "./components/MixedChart";
-import AverageChart from "./components/AverageChart";
-import Notification from "./components/Notification";
-import { AudioPlayerProvider } from "react-use-audio-player";
-import AudioP from "./components/Audio";
-import WebsocketComponent from "./components/WebsocketComponent";
+// import { AudioPlayerProvider } from "react-use-audio-player";
+// import AudioP from "./components/Audio";
 import { withRouter } from "react-router-dom";
-import WARNING from "./warning.mp3";
+// import WARNING from "./warning.mp3";
 
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import Collapse from "@material-ui/core/Collapse";
 
 import { withStyles } from "@material-ui/core/styles";
 import Card from "./components/Card";
@@ -20,8 +16,8 @@ import Test from "./components/Test";
 
 import { CONSTANT_TYPE, CONSTANT_TYPE_AVG, clearToken } from "./utils";
 
-const url = "ws://localhost:3300/";
-// const url = "ws://45.119.83.67:3300/";
+// const url = "ws://localhost:3300/";
+const url = "ws://45.119.83.67:3300/";
 const useStyles = (theme) => ({
 	root: {
 		flexGrow: 1,
@@ -62,8 +58,12 @@ class Main extends Component {
 					{ id: "Node2", avgTemperature: [""], avgGas: [""] },
 				],
 			},
-			trigger: false,
-			expand: false,
+			trigger: {
+				burnNode1: false,
+				burnNode2: false,
+				timbersawNode1: false,
+				timbersawNode2: false,
+			},
 		};
 	}
 	componentDidMount() {
@@ -71,7 +71,7 @@ class Main extends Component {
 		this.handleTrigger();
 	}
 	componentDidUpdate(prevProps, prevState) {
-		if (prevState.trigger !== this.state.trigger) {
+		if (prevState.data[0].gas !== this.state.data[0].gas) {
 			this.handleTrigger();
 		}
 	}
@@ -129,17 +129,18 @@ class Main extends Component {
 	};
 
 	handleUpdateData = ({ type, valueNode1, valueNode2, category, newData }) => {
-		const clonedData = [
-			{ ...newData[0], [type]: valueNode1 },
-			{ ...newData[1], [type]: valueNode2 },
-		];
+		let clonedData = [];
+		if (valueNode1 === "") {
+			clonedData.push({ ...newData[0] }, { ...newData[1], [type]: valueNode2 });
+		} else {
+			clonedData.push({ ...newData[0], [type]: valueNode1 }, { ...newData[1] });
+		}
+
 		newData = [...clonedData];
 		return [newData, category];
 	};
 
 	handleSetState = (message) => {
-		console.log("message received:  ");
-		message === "" ? console.log("empty") : console.log(message);
 		const dataMessage = JSON.parse(message);
 		let newAvgData = [
 			{
@@ -178,6 +179,7 @@ class Main extends Component {
 					data: newData,
 				});
 			} else {
+				console.log("data received: ", message);
 				dataMessage[1].map((dataItem) => {
 					newCategory.length < dataMessage[1].length / 2 &&
 						newCategory.push(dataItem.date);
@@ -211,19 +213,45 @@ class Main extends Component {
 	};
 
 	handleTrigger = () => {
-		const { temperature, gas } = this.state.data;
-		const isOverTemperature = temperature >= 60;
-		const isOverGas = gas >= 30;
-		(isOverGas || isOverTemperature) && this.setState({ trigger: true });
+		const dataNode1 = this.state.data[0];
+		const dataNode2 = this.state.data[1];
+		const thresholdTemp = 60;
+		const thresholdGas = 15;
+
+		const isOverTemperatureNode1 = +dataNode1.temperature >= thresholdTemp;
+		const isOverTemperatureNode2 = +dataNode2.temperature >= thresholdTemp;
+		const isOverGasNode1 = +dataNode1.gas >= thresholdGas;
+		const isOverGasNode2 = +dataNode2.gas >= thresholdGas;
+
+		const timbersawNode1 = +dataNode1.timbersaw;
+		const timbersawNode2 = +dataNode2.timbersaw;
+		const burnNode1 = isOverGasNode1 || isOverTemperatureNode1;
+		const burnNode2 = isOverGasNode2 || isOverTemperatureNode2;
+
+		console.log("node1: ", +dataNode1.temperature, +dataNode1.gas);
+		console.log({ burnNode1, burnNode2, timbersawNode1, timbersawNode2 });
+		this.setState({
+			trigger: {
+				burnNode1,
+				burnNode2,
+				timbersawNode1,
+				timbersawNode2,
+			},
+		});
 	};
 
 	setPlay = () => this.setState({ trigger: false });
 	render() {
-		const { ws, category, data, avgDailyData, trigger, expand } = this.state;
+		const { ws, category, data, avgDailyData, trigger } = this.state;
 		const { classes } = this.props;
 		return (
 			<div className={classes.root}>
-				<AppBar />
+				<AppBar
+					burnNode1={trigger.burnNode1}
+					burnNode2={trigger.burnNode2}
+					timbersawNode1={trigger.timbersawNode1}
+					timbersawNode2={trigger.timbersawNode2}
+				/>
 				<Grid
 					className={classes.mainContainer}
 					container
@@ -307,8 +335,6 @@ class Main extends Component {
 						</div>
 					</Grid>
 				</Grid>
-
-				{/* <Notification trigger={trigger} /> */}
 				{/* <button onClick={this.setPlay}>{trigger ? "Play" : "Pause"}</button>
 				<AudioPlayerProvider>
 					<AudioP file={WARNING} trigger={trigger} />
