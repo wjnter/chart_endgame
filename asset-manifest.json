@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/chart_endgame/static/css/main.b7082373.chunk.css",
+    "main.js": "/chart_endgame/static/js/main.ec74e0ec.chunk.js",
+    "main.js.map": "/chart_endgame/static/js/main.ec74e0ec.chunk.js.map",
+    "runtime-main.js": "/chart_endgame/static/js/runtime-main.f7662ed5.js",
+    "runtime-main.js.map": "/chart_endgame/static/js/runtime-main.f7662ed5.js.map",
+    "static/css/2.e33194e6.chunk.css": "/chart_endgame/static/css/2.e33194e6.chunk.css",
+    "static/js/2.a99aac8d.chunk.js": "/chart_endgame/static/js/2.a99aac8d.chunk.js",
+    "static/js/2.a99aac8d.chunk.js.map": "/chart_endgame/static/js/2.a99aac8d.chunk.js.map",
+    "index.html": "/chart_endgame/index.html",
+    "precache-manifest.49b40f0975c1d59301c2a1b9d894db9d.js": "/chart_endgame/precache-manifest.49b40f0975c1d59301c2a1b9d894db9d.js",
+    "service-worker.js": "/chart_endgame/service-worker.js",
+    "static/css/2.e33194e6.chunk.css.map": "/chart_endgame/static/css/2.e33194e6.chunk.css.map",
+    "static/css/main.b7082373.chunk.css.map": "/chart_endgame/static/css/main.b7082373.chunk.css.map",
+    "static/js/2.a99aac8d.chunk.js.LICENSE.txt": "/chart_endgame/static/js/2.a99aac8d.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.f7662ed5.js",
+    "static/css/2.e33194e6.chunk.css",
+    "static/js/2.a99aac8d.chunk.js",
+    "static/css/main.b7082373.chunk.css",
+    "static/js/main.ec74e0ec.chunk.js"
+  ]
+}
