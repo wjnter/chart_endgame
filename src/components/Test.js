@@ -4,7 +4,6 @@ import "../assets/css/styles.css";
 import { makeStyles } from "@material-ui/core/styles";
 
 import Drawer from "@material-ui/core/Drawer";
-import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 

@@ -58,7 +58,7 @@ function MainAppBar(props) {
 						<SpaIcon />
 					</IconButton>
 					<Typography variant="h6" className={classes.title}>
-						Bảng thông tin
+						Mô hình Bảo vệ rừng ứng dụng IoT
 					</Typography>
 					<FormGroup>
 						<FormControlLabel

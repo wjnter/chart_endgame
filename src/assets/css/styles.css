@@ -110,6 +110,14 @@ body {
 	border-radius: 5px;
 }
 
+.hover-icon {
+	margin-left: 10px;
+}
+
+.hover-icon:hover {
+	opacity: 0.8;
+}
+
 .chart-container {
 	display: flex;
 	justify-content: space-evenly;

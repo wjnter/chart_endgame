@@ -13,6 +13,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Card from "./components/Card";
 import AppBar from "./components/AppBar";
 import Test from "./components/Test";
+import Title from "./components/Popover";
 
 import { CONSTANT_TYPE, CONSTANT_TYPE_AVG, clearToken } from "./utils";
 
@@ -263,9 +264,10 @@ class Main extends Component {
 							{data.map((d, idx) => (
 								<React.Fragment key={idx}>
 									<Grid container alignItems="center" justify="space-evenly">
-										<p className="card-title-node">
-											{"Trạng thái Trạm " + (idx + 1)}
-										</p>
+										<Title
+											title={"Trạng thái Trạm " + (idx + 1)}
+											location="Nhà bà 8"
+										/>
 										<Grid container alignItems="center">
 											<Grid md={3} sm={6} xs={12}>
 												<Card
